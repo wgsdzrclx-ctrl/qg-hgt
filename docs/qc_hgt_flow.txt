@@ -1,0 +1,47 @@
+QC-HGT 模型结构伪代码流程图
+==========================
+
+输入：一个批次的 TEP HeteroData
+│
+├─ sensor.raw_window / observed_mask / timestamp_delay
+│  └─ 计算可观测质量描述 a_j
+│     ├─ 缺失率
+│     ├─ 一阶差分方差
+│     ├─ FFT 高频能量占比
+│     ├─ 与窗口历史均值的偏差
+│     ├─ 连续相同值比例
+│     └─ 可观测时间戳延迟
+│        └─ MLP_q + Sigmoid → r_j
+│           └─ 仅训练：MSE(r_j, q*_j) → L_q
+│
+├─ 三类节点的七维统计特征 x_dict
+│  └─ 类型专属 Linear → 初始隐藏表示 h_dict
+│
+├─ 对每一层 QC-HGTLayer
+│  └─ 对每种关系 r 的真实边 j→i
+│     ├─ 一致性关系投影：z_j^s=W_r^s h_j，z_i^t=W_r^t h_i
+│     ├─ 一致性分支
+│     │  ├─ [z_j^s || z_i^t || e_r || |z_j^s-z_i^t|]
+│     │  ├─ MLP_c + Sigmoid → c_ij
+│     │  ├─ 正样本：真实边、同一 run 同一窗口
+│     │  ├─ 负样本：错误连接、跨窗口/跨 run、时间错位
+│     │  └─ BCE → L_c
+│     ├─ 基础关系注意力（与一致性投影独立的共享 W_r）
+│     │  └─ LeakyReLU(a_r^T[W_r h_i || W_r h_j || e_r]) → e_ij^(r)
+│     ├─ 默认协同融合
+│     │  └─ e_ij + λ_r log(r_j+ε) + γ_r c_ij
+│     ├─ Product Fusion 消融
+│     │  └─ exp(e_ij)·r_j·c_ij 后再归一化
+│     ├─ 按目标节点、按关系邻域 softmax → α_ij^(r)
+│     └─ W_0 h_i + Σ_r Σ_j α_ij^(r) W_r h_j → 新 h_i
+│
+├─ sensor / process_unit / actuator 分别 mean-pool
+│  └─ 拼接 [g_s || g_u || g_a]
+│     └─ MLP_cls → logits → Softmax 概率
+│
+└─ 训练联合损失
+   └─ L = λ_cls L_cls + λ_q L_q + λ_c L_c
+
+推理约束：
+模型只使用窗口、观测掩码和真实可观测时间戳延迟计算 a_j；q*_j 仅用于训练监督。
+Fixed Quality 需要 q*_j，因此代码将其限制为显式 oracle 诊断，普通推理缺少 q* 时直接报错。

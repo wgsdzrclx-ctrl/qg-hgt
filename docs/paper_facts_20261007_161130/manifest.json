@@ -1,0 +1,537 @@
+{
+  "audited_at": "2026-10-07T16:11:30.445622+08:00",
+  "historical_launch_snapshot_available": false,
+  "files": {
+    "E:\\Desktop\\paper_code\\configs\\data.yaml": "e9e44e164336bd1ff2224056b14997b23c1bd6ca43a334b8de2274a4ecfefb49",
+    "E:\\Desktop\\paper_code\\configs\\stage2.yaml": "54dbfb591f518f2cfce620292da5c50c3a280fc691d9b8d55661dbc377d7eb36",
+    "E:\\Desktop\\paper_code\\configs\\stage5.yaml": "09cad1e0c4d59b424e523cfb98050bf25f9a7a31f82fba33bff4395c901f2b26",
+    "E:\\Desktop\\paper_code\\论文框架.md": "15a17ebb17e2a637447cae4b57e365f116439aeea13f1d514193d699852d75f9",
+    "E:\\Desktop\\paper_code\\scripts\\run_protocol.py": "c5ecd726ef18cead1b193241d698e864425f3bde704c9f5b61210780aa796c7c",
+    "E:\\Desktop\\paper_code\\models\\qc_hgt.py": "c357ff3276ca0c9ed74f6d6c0490d9711a54a4007a71a823bfab0ce0911ad83c",
+    "E:\\Desktop\\会议论文文件\\III. Experiments.md": "38f95ab96dae3545700647ccd37fb1400ff01ae4aeb8f11e23dc66bbe0d5ad96"
+  },
+  "split_summary": {
+    "train": {
+      "total_runs": 8400,
+      "total_windows": 3956400,
+      "sampled_windows": 5000,
+      "sampled_runs": 252,
+      "run_lengths": {
+        "500": 8400
+      },
+      "runs_per_fault": {
+        "0": 400,
+        "1": 400,
+        "2": 400,
+        "3": 400,
+        "4": 400,
+        "5": 400,
+        "6": 400,
+        "7": 400,
+        "8": 400,
+        "9": 400,
+        "10": 400,
+        "11": 400,
+        "12": 400,
+        "13": 400,
+        "14": 400,
+        "15": 400,
+        "16": 400,
+        "17": 400,
+        "18": 400,
+        "19": 400,
+        "20": 400
+      }
+    },
+    "val": {
+      "total_runs": 2100,
+      "total_windows": 989100,
+      "sampled_windows": 2000,
+      "sampled_runs": 105,
+      "run_lengths": {
+        "500": 2100
+      },
+      "runs_per_fault": {
+        "0": 100,
+        "1": 100,
+        "2": 100,
+        "3": 100,
+        "4": 100,
+        "5": 100,
+        "6": 100,
+        "7": 100,
+        "8": 100,
+        "9": 100,
+        "10": 100,
+        "11": 100,
+        "12": 100,
+        "13": 100,
+        "14": 100,
+        "15": 100,
+        "16": 100,
+        "17": 100,
+        "18": 100,
+        "19": 100,
+        "20": 100
+      }
+    },
+    "test": {
+      "total_runs": 10500,
+      "total_windows": 9775500,
+      "sampled_windows": 2000,
+      "sampled_runs": 105,
+      "run_lengths": {
+        "960": 10500
+      },
+      "runs_per_fault": {
+        "0": 500,
+        "1": 500,
+        "2": 500,
+        "3": 500,
+        "4": 500,
+        "5": 500,
+        "6": 500,
+        "7": 500,
+        "8": 500,
+        "9": 500,
+        "10": 500,
+        "11": 500,
+        "12": 500,
+        "13": 500,
+        "14": 500,
+        "15": 500,
+        "16": 500,
+        "17": 500,
+        "18": 500,
+        "19": 500,
+        "20": 500
+      }
+    }
+  },
+  "edge_counts": {
+    "sensor|monitors|process_unit": 41,
+    "actuator|controls|process_unit": 11,
+    "process_unit|flows_to|process_unit": 6,
+    "sensor|co_monitors|sensor": 370,
+    "process_unit|monitored_by|sensor": 41,
+    "process_unit|controlled_by|actuator": 11
+  },
+  "results": [
+    {
+      "protocol": "protocol_1",
+      "model": "cnn",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\cnn_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 20,
+      "sha256": "ff3b864a0bb8b3174718855845587380c3f7daa0e61db8b63932377c5b136d7b"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "cnn",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\cnn_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 23,
+      "sha256": "cfba2be335ed11b8684a4ec423b408183e87794773454b963dc9978c6a68189b"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "cnn",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\cnn_2.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 19,
+      "sha256": "966a5ce5f227ac6a3acf64d9febd2ad44122685099a1133022a98ce0eda5d8a8"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "cnn",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\cnn_3.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 27,
+      "sha256": "4365f99c55cbb53c38bd1be1b3c37371f711f07eb9697c985aeb2704e2f5e386"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "cnn",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\cnn_4.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 20,
+      "sha256": "b252df5ca568359f42bb3a8a818f5b0ec193f386df12bdbf09d7fe476f608f79"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "gcn",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\gcn_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 28,
+      "sha256": "48b28c49612751ebbbe74fce76f1cec28873135cc86d8535d57938759d3ab056"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "gcn",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\gcn_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 18,
+      "sha256": "958b4652fcef1849aff25bcdfd7f6898c9477a7d3ac244d9a3946021873c28e8"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "gcn",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\gcn_2.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 16,
+      "sha256": "c61c75efb0e7d78692c9781666dec0c4cca2301471f1e35d9484925f767bd2c1"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "gcn",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\gcn_3.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 9,
+      "sha256": "0d9093767a72f97c415b6718ea8aabf3f4eb4c7380fd7a4a61007f12c7ec74d2"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "gcn",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\gcn_4.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 28,
+      "sha256": "e7b51443325e1999487b92a6ce767ed9faea5de6aa1d5e147398ff73dbde4678"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "hgt",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\hgt_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 22,
+      "sha256": "d3d137197fac07c28947ee3210369cdc89e0f7851cef615b3edbbf169e472010"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "hgt",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\hgt_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 27,
+      "sha256": "fd0be620bc71e4f7fe0678cefdd511924e811f2d96b2106d68c3d32c60a771a0"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "hgt",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\hgt_2.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 18,
+      "sha256": "cc3cd6befed76feb91359fddffea9487a6eb8308dca6b6372045fbeeeb116b0c"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "hgt",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\hgt_3.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 26,
+      "sha256": "49c50e8bbcda726368c57564415c2ee19976a9a28ce2ed593724929022fe85bf"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "hgt",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\hgt_4.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 27,
+      "sha256": "4115e1cf28f49054e2b65c83e35a30ad2d4d47f3b369f0934e952963fd49c9da"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "qc_hgt",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\qc_hgt_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 30,
+      "sha256": "567207dde833ec9797406c816ddc39f5d4428d96740f2ca250a090fd487829a3"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "qc_hgt",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\qc_hgt_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 29,
+      "sha256": "30d4fb82e2e27652c413db1c17278744a78e6d481b9728fbddc2b42fd54ac8b4"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "qc_hgt",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\qc_hgt_2.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 28,
+      "sha256": "f9bbe01f76c5424b1d2176ddb1dc5de8ded8af4d7eedc62fdb6d88f95ecc5378"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "qc_hgt",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\qc_hgt_3.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 30,
+      "sha256": "bda4194bf181721360966f82ed9ef16ea1e2442729331894c4ea5624e9d79208"
+    },
+    {
+      "protocol": "protocol_1",
+      "model": "qc_hgt",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_1\\main\\qc_hgt_4.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 28,
+      "sha256": "8c4541decec9dd1cb83d9208bddafdc3a6a1ddf24dfc55f06f85700033882886"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 11,
+      "sha256": "84ad69cbf09ee61c1e1977b45a3f6ff8dc4c36bcb5a003a2522b34793a33559f"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 14,
+      "sha256": "efcd9432bcf289e4c60cf5a37a4059857d208c4850f99509a915067c6856944b"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_2.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 16,
+      "sha256": "28e8078e2037a9c7629b7c46352e270cf297ecf4cf65c7eb4949f833ebae44d2"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_3.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 30,
+      "sha256": "e784a3258c34e010f0527bb5cdee69f67f50d0c5e38cf07b321162dea5e857bf"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_4.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 26,
+      "sha256": "4dfa223a544bb8332435404bd8dbb7d1f829d7f42fa3743a9225beecd99f45ec"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_learnable_quality",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_learnable_quality_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 30,
+      "sha256": "53d6345fca44672e226eb8eee62694ebe8c51a3651e2524393ea03b760653b60"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_learnable_quality",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_learnable_quality_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 26,
+      "sha256": "6004ced604e497742a19fb3eeac9969180303e906b2df4ef374b2d76e8d0fd61"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_learnable_quality",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_learnable_quality_2.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 17,
+      "sha256": "26237c34b51ee860e37f00d728d93e600871262e34702c664471ffdc9519acd0"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_learnable_quality",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_learnable_quality_3.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 27,
+      "sha256": "6b43e071e39f707f0b307dccbf530dc71387ace7a001366667b3fab01f810a19"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_learnable_quality",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_learnable_quality_4.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 29,
+      "sha256": "7cc09cc77ca58a4c69b96a541c25c095b85644731656bccad463ef508f082185"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_consistency",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_consistency_0.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 28,
+      "sha256": "014f31cdada90cd242e66d952c9d9b7baf980748c263d728421f1fc31c74b90a"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_consistency",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_consistency_1.json",
+      "complete": true,
+      "checkpoint_exists": true,
+      "scenarios": 23,
+      "best_epoch": 26,
+      "sha256": "7cb5f24820e979660ad34535b03cfc5a887aa82d53ca2591433d45dc2283fc02"
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_consistency",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_consistency_2.json",
+      "complete": false,
+      "checkpoint_exists": true
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_consistency",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_consistency_3.json",
+      "complete": false,
+      "checkpoint_exists": false
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "hgt_consistency",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\hgt_consistency_4.json",
+      "complete": false,
+      "checkpoint_exists": false
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "qc_hgt",
+      "seed": 0,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\qc_hgt_0.json",
+      "complete": false,
+      "checkpoint_exists": false
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "qc_hgt",
+      "seed": 1,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\qc_hgt_1.json",
+      "complete": false,
+      "checkpoint_exists": false
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "qc_hgt",
+      "seed": 2,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\qc_hgt_2.json",
+      "complete": false,
+      "checkpoint_exists": false
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "qc_hgt",
+      "seed": 3,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\qc_hgt_3.json",
+      "complete": false,
+      "checkpoint_exists": false
+    },
+    {
+      "protocol": "protocol_2",
+      "model": "qc_hgt",
+      "seed": 4,
+      "path": "E:\\Desktop\\paper_code\\results\\stage5\\protocol_2\\main\\qc_hgt_4.json",
+      "complete": false,
+      "checkpoint_exists": false
+    }
+  ]
+}

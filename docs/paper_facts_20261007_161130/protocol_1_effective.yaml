@@ -1,0 +1,756 @@
+experiment:
+  experiment:
+    name: stage2_mlp_baseline
+  data:
+    config_path: data.yaml
+    variant_override: null
+    test_scenario: clean
+    print_leakage_report: true
+  graph:
+    homogeneous_ablation: false
+    temporal_negative_shift: 3
+    statistics:
+      feature_names:
+      - mean
+      - std
+      - min
+      - max
+      - trend
+      - last
+      - delta
+      std_correction: 0
+      missing_fill_value: 0.0
+  models:
+    mlp:
+      input_dim: 364
+      hidden_dims:
+      - 256
+      - 128
+      dropout: 0.2
+      activation: relu
+      input_normalization: layer_norm
+    cnn:
+      input_channels: 52
+      channels:
+      - 64
+      - 128
+      kernel_sizes:
+      - 5
+      - 3
+      dropout: 0.2
+      activation: relu
+      normalization_epsilon: 1.0e-06
+    tcn:
+      input_channels: 52
+      channels:
+      - 64
+      - 64
+      kernel_size: 3
+      dilations:
+      - 1
+      - 2
+      dropout: 0.2
+      activation: relu
+      normalization_epsilon: 1.0e-06
+    lstm:
+      input_size: 52
+      hidden_dim: 64
+      num_layers: 2
+      dropout: 0.2
+      bidirectional: false
+      normalization_epsilon: 1.0e-06
+    gcn:
+      input_dim: 7
+      input_normalization: layer_norm
+      hidden_dim: 64
+      num_layers: 2
+      classifier_hidden_dims:
+      - 128
+      dropout: 0.2
+      activation: relu
+    sage:
+      input_dim: 7
+      input_normalization: layer_norm
+      hidden_dim: 64
+      num_layers: 2
+      aggregation: mean
+      classifier_hidden_dims:
+      - 128
+      dropout: 0.2
+      activation: relu
+    gat:
+      input_dim: 7
+      input_normalization: layer_norm
+      hidden_dim: 64
+      num_layers: 2
+      heads: 4
+      attention_dropout: 0.1
+      classifier_hidden_dims:
+      - 128
+      dropout: 0.2
+      activation: elu
+    rgcn:
+      input_dim: 7
+      input_normalization: layer_norm
+      hidden_dim: 64
+      num_layers: 2
+      classifier_hidden_dims:
+      - 128
+      dropout: 0.2
+      activation: relu
+    hgt:
+      input_dim: 7
+      input_normalization: layer_norm
+      hidden_dim: 64
+      num_layers: 2
+      heads: 4
+      classifier_hidden_dims:
+      - 128
+      dropout: 0.2
+      activation: gelu
+    qc_hgt:
+      input_dim: 7
+      input_normalization: layer_norm
+      hidden_dim: 64
+      num_layers: 2
+      relation_dim: 16
+      dropout: 0.1
+      activation: elu
+      quality:
+        descriptor_normalization: layer_norm
+        hidden_dims:
+        - 32
+        - 16
+        activation: relu
+        dropout: 0.1
+        fft_high_frequency_start: 0.5
+        history_length: 10
+        normalize_history_deviation: true
+        repeat_tolerance: 1.0e-06
+        timestamp_delay_scale: 1.0
+        epsilon: 1.0e-08
+        fixed_observable:
+          weights:
+          - 1.0
+          - 1.0
+          - 1.0
+          - 1.0
+          - 1.0
+          - 1.0
+          scales:
+          - 0.1
+          - 1.0
+          - 0.25
+          - 1.0
+          - 0.25
+          - 1.0
+      consistency:
+        hidden_dims:
+        - 64
+        - 32
+        activation: relu
+        dropout: 0.1
+        memory:
+          logit_chunk_size: 16384
+          gradient_checkpointing: true
+        negative_sampling:
+          random_wrong_connection: true
+          different_window_or_run: true
+          temporal_misalignment: true
+          balance_positive_negative: true
+      attention:
+        negative_slope: 0.2
+        epsilon: 1.0e-08
+        learnable_fusion_coefficients: true
+        quality_lambda_initial:
+        - 1.0
+        - 1.0
+        - 1.0
+        - 1.0
+        - 1.0
+        - 1.0
+        consistency_gamma_initial:
+        - 1.0
+        - 1.0
+        - 1.0
+        - 1.0
+        - 1.0
+        - 1.0
+      classification:
+        hidden_dims:
+        - 128
+        activation: relu
+        dropout: 0.2
+      loss_weights:
+        classification: 1.0
+        quality: 0.5
+        consistency: 0.2
+      switches:
+        quality_attention: true
+        consistency_attention: true
+        fixed_quality: false
+        product_fusion: false
+        quality_loss: true
+        consistency_loss: true
+        fixed_observable_quality: false
+        relation_types: true
+    hgt_fixed_quality:
+      switches:
+        quality_attention: true
+        consistency_attention: false
+        fixed_quality: true
+        product_fusion: false
+        quality_loss: false
+        consistency_loss: false
+    hgt_learnable_quality:
+      switches:
+        quality_attention: true
+        consistency_attention: false
+        fixed_quality: false
+        product_fusion: false
+        quality_loss: true
+        consistency_loss: false
+    hgt_consistency:
+      switches:
+        quality_attention: false
+        consistency_attention: true
+        fixed_quality: false
+        product_fusion: false
+        quality_loss: false
+        consistency_loss: true
+  training:
+    optimizer: adamw
+    loss: cross_entropy
+    epochs: 30
+    batch_size: 128
+    learning_rate: 0.001
+    weight_decay: 0.0001
+    gradient_clip_norm: 5.0
+    num_workers: 0
+    pin_memory: true
+    persistent_workers: false
+    shuffle:
+      train: true
+      val: false
+      test: false
+    early_stopping:
+      metric: macro_f1
+      mode: max
+      patience: 5
+      min_delta: 0.0001
+  evaluation:
+    metrics:
+      ece_bins: 15
+      probability_epsilon: 1.0e-12
+      normal_class: 0
+      store_per_run_delays: false
+  sampling:
+    base_seed: 0
+    max_samples_per_split:
+      train: 5000
+      val: 2000
+      test: 2000
+    seed_offsets:
+      train: 0
+      val: 10000
+      test: 20000
+    strategy: run_balanced
+    windows_per_run: 20
+    train_order: run_grouped
+    run_group_chunk_size: 4
+  runtime:
+    device: cuda
+    deterministic: true
+    deterministic_warn_only: false
+    cpu_threads: 4
+  logging:
+    level: INFO
+  output:
+    directory: ../results
+    checkpoint_subdirectory: checkpoints
+    log_subdirectory: logs
+    json_indent: 2
+  reporting:
+    std_ddof: 1
+  _config_dir: E:\Desktop\paper_code\configs
+data:
+  experiment:
+    seeds:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+  dataset:
+    variant: extended500
+    paper_main_variant: extended500
+    root: ../datasets/tep
+    num_variables: 52
+    xmeas_count: 41
+    xmv_count: 11
+    fault_ids:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+    - 16
+    - 17
+    - 18
+    - 19
+    - 20
+    - 21
+    nan_fill_value: 0.0
+    run_cache_size: 256
+    split:
+      seed: 0
+      validation_fraction: 0.2
+      stratify_by_fault: true
+      singleton_policy: train
+      fail_on_leakage: true
+    labeling:
+      normal_class: 0
+      normal_before_onset: false
+      sample_index_base: 1
+      fault_onset_sample:
+        train: null
+        test: null
+    variants:
+      standard:
+        layout: run_files
+        experiment_role: compatibility_only
+        num_classes: 22
+        fault_ids:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        - 21
+        source_note: Braatz reference files; 22 train files and 22 test files.
+        source:
+          name: Tennessee Eastman Process reference simulation files (Braatz)
+          url: https://github.com/camaramm/tennessee-eastman-profBraatz
+          revision: 0643318858ce7c87292bd59820b459e12a13d009
+        train_dir: standard/train
+        test_dir: standard/test
+        manifest: null
+        manifest_columns:
+          split: split
+          path: path
+          run_id: run_id
+          fault_id: fault_id
+        file_glob: '**/*'
+        extensions:
+        - .csv
+        - .txt
+        - .dat
+        - .npy
+        - .npz
+        - .pt
+        - .pth
+        expected_train_runs: 22
+        expected_test_runs: 22
+        strict_counts: true
+        split:
+          seed: 0
+          validation_fraction: 0.2
+          stratify_by_fault: false
+          singleton_policy: train
+          fail_on_leakage: true
+        delimiter: auto
+        has_header: auto
+        encoding: utf-8-sig
+        auto_transpose: true
+        label_column: label
+        label_column_index: null
+        fault_regex: (?:fault|idv|d)[_-]?(?P<fault>\d{1,2})
+        run_regex: (?:run|r)[_-]?(?P<run>\d+)
+        npz_data_key: x
+        npz_label_key: y
+        tensor_data_key: x
+        tensor_label_key: y
+        labeling:
+          normal_class: 0
+          normal_before_onset: true
+          sample_index_base: 1
+          fault_onset_sample:
+            train: 21
+            test: 161
+      extended500:
+        layout: table
+        experiment_role: paper_main
+        num_classes: 21
+        source_note: Rieth et al.; 500 independent runs per class and source split.
+        source:
+          name: Tennessee Eastman Process simulation dataset (Rieth et al.)
+          url: https://doi.org/10.7910/DVN/6C3JR1
+          mirror: https://huggingface.co/datasets/foundation-models/golden-batch-sentinel-data
+        tables:
+          train:
+          - extended500/run_parquet/fault_free_train.parquet
+          - extended500/run_parquet/faulty_train.parquet
+          test:
+          - extended500/run_parquet/fault_free_test.parquet
+          - extended500/run_parquet/faulty_test.parquet
+        fault_ids:
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+        fault_column: fault_id
+        run_column: simulation_id
+        sample_column: sample_id
+        parquet_row_group_per_run: true
+        expected_runs_per_fault: 500
+        strict_counts: true
+        max_runs_per_fault: null
+        labeling:
+          normal_class: 0
+          normal_before_onset: true
+          sample_index_base: 1
+          fault_onset_sample:
+            train: 21
+            test: 161
+    feature_columns: []
+  window:
+    length: 30
+    stride: 1
+  corruptions:
+    gaussian_noise:
+      levels:
+      - 0.05
+      - 0.1
+      - 0.2
+      - 0.4
+    drift:
+      levels:
+      - 0.001
+      - 0.0025
+      - 0.005
+      - 0.01
+      time_origin: window_start
+    random_missing:
+      levels:
+      - 0.05
+      - 0.1
+      - 0.2
+      - 0.4
+      fill_value: 0.0
+    continuous_missing:
+      levels:
+      - 3
+      - 6
+      - 9
+      - 12
+      fill_value: 0.0
+    time_shift:
+      levels:
+      - 1
+      - 2
+      - 4
+      - 8
+      padding: edge
+  quality:
+    beta:
+      gaussian_noise: 0.25
+      missing: 0.25
+      drift: 0.25
+      time_shift: 0.25
+    normalization:
+      gaussian_sigma: 0.4
+      missing_rate: 0.4
+      drift_slope: 0.01
+      time_shift: 8
+    clamp:
+    - 0.0
+    - 1.0
+    attach_target:
+      train: true
+      val: false
+      test: false
+  protocols:
+    active: protocol_1
+    protocol_1:
+      splits:
+        train:
+          mode: clean
+        val:
+          mode: clean
+        test:
+          mode: clean
+      test_scenarios:
+        clean:
+          mode: clean
+        degraded_single:
+          mode: sample
+          probability: 1.0
+          combinations:
+          - - gaussian_noise
+          - - drift
+          - - random_missing
+          - - continuous_missing
+          - - time_shift
+          levels:
+            gaussian_noise:
+            - 0.05
+            - 0.1
+            - 0.2
+            - 0.4
+            drift:
+            - 0.001
+            - 0.0025
+            - 0.005
+            - 0.01
+            random_missing:
+            - 0.05
+            - 0.1
+            - 0.2
+            - 0.4
+            continuous_missing:
+            - 3
+            - 6
+            - 9
+            - 12
+            time_shift:
+            - 1
+            - 2
+            - 4
+            - 8
+          variable_selection: &id002
+            count:
+            - 1
+            - 5
+            include: []
+            exclude: []
+    protocol_2:
+      splits:
+        train:
+          mode: sample
+          probability: 0.8
+          combinations:
+          - - gaussian_noise
+          - - drift
+          - - random_missing
+          - - continuous_missing
+          - - time_shift
+          - - gaussian_noise
+            - random_missing
+          levels:
+            gaussian_noise:
+            - 0.05
+            - 0.1
+            - 0.2
+            drift:
+            - 0.001
+            - 0.0025
+            - 0.005
+            random_missing:
+            - 0.05
+            - 0.1
+            - 0.2
+            continuous_missing:
+            - 3
+            - 6
+            - 9
+            time_shift:
+            - 1
+            - 2
+            - 4
+          variable_selection: &id001
+            count:
+            - 1
+            - 5
+            include: []
+            exclude: []
+        val:
+          mode: sample
+          probability: 0.8
+          combinations:
+          - - gaussian_noise
+          - - drift
+          - - random_missing
+          - - continuous_missing
+          - - time_shift
+          - - gaussian_noise
+            - random_missing
+          levels:
+            gaussian_noise:
+            - 0.05
+            - 0.1
+            - 0.2
+            drift:
+            - 0.001
+            - 0.0025
+            - 0.005
+            random_missing:
+            - 0.05
+            - 0.1
+            - 0.2
+            continuous_missing:
+            - 3
+            - 6
+            - 9
+            time_shift:
+            - 1
+            - 2
+            - 4
+          variable_selection: *id001
+        test:
+          mode: clean
+      test_scenarios:
+        known:
+          mode: sample
+          probability: 1.0
+          combinations:
+          - - gaussian_noise
+          - - drift
+          - - random_missing
+          - - continuous_missing
+          - - time_shift
+          - - gaussian_noise
+            - random_missing
+          levels:
+            gaussian_noise:
+            - 0.05
+            - 0.1
+            - 0.2
+            drift:
+            - 0.001
+            - 0.0025
+            - 0.005
+            random_missing:
+            - 0.05
+            - 0.1
+            - 0.2
+            continuous_missing:
+            - 3
+            - 6
+            - 9
+            time_shift:
+            - 1
+            - 2
+            - 4
+          variable_selection: *id002
+        unseen_combination:
+          mode: sample
+          probability: 1.0
+          combinations:
+          - - drift
+            - time_shift
+          - - gaussian_noise
+            - continuous_missing
+          - - random_missing
+            - time_shift
+          levels:
+            gaussian_noise:
+            - 0.05
+            - 0.1
+            - 0.2
+            drift:
+            - 0.001
+            - 0.0025
+            - 0.005
+            random_missing:
+            - 0.05
+            - 0.1
+            - 0.2
+            continuous_missing:
+            - 3
+            - 6
+            - 9
+            time_shift:
+            - 1
+            - 2
+            - 4
+          variable_selection: *id002
+  evaluation:
+    test_scenario_by_protocol:
+      protocol_1: degraded_single
+      protocol_2: known
+    fixed_strength_grid:
+      variable_selection: *id002
+      levels:
+        gaussian_noise:
+        - 0.05
+        - 0.1
+        - 0.2
+        - 0.4
+        drift:
+        - 0.001
+        - 0.0025
+        - 0.005
+        - 0.01
+        random_missing:
+        - 0.05
+        - 0.1
+        - 0.2
+        - 0.4
+        continuous_missing:
+        - 3
+        - 6
+        - 9
+        - 12
+        time_shift:
+        - 1
+        - 2
+        - 4
+        - 8
+  self_check:
+    seed: 0
+    variable_index: 0
+    time_points: 30
+    sine_cycles: 2.0
+    trend_slope: 0.02
+    output_figure: ../artifacts/corruption_check.png
+    monotonic_tolerance: 1.0e-07
+    figure_size:
+    - 11.0
+    - 14.0
+    dpi: 150
+    line_width: 1.6
+  _config_dir: E:\Desktop\paper_code\configs

@@ -1,0 +1,47 @@
+# Python environments, bytecode, and local tooling
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.codex-build/
+.codex/
+.agents/
+.aws/
+.matplotlib/
+.vscode/
+.idea/
+.env
+.env.*
+!.env.example
+Thumbs.db
+.DS_Store
+
+# Downloaded datasets and nested upstream repositories stay local.
+/datasets/*
+!/datasets/tep/
+/datasets/tep/*
+!/datasets/tep/README.md
+
+# Training outputs, weights, and generated presentation assets
+/results/
+/artifacts/
+*.pt
+*.pth
+*.ckpt
+*.onnx
+
+# Large generated audit snapshots; retain reports and compact audit metrics.
+/docs/paper_facts_*/result_snapshot.json
+/docs/paper_facts_*/run_and_window_manifest.json
+
+# Temporary PDF renders; retain the small diagnostics referenced by the report.
+/tmp/*
+!/tmp/audit/
+/tmp/audit/*
+!/tmp/audit/model_probes.py
+!/tmp/audit/model_probe_results.json

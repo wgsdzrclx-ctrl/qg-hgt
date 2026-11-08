@@ -1,0 +1,73 @@
+{
+  "constant_levels_10_vs_100_layer_norm_max_absolute_difference": 1.1920928955078125e-07,
+  "swap_XMEAS1_XMEAS2_logits_max_absolute_difference": 0.0,
+  "timestamp_delay_all_zero_without_observed_timestamps": true,
+  "relations": [
+    {
+      "edge_type": [
+        "sensor",
+        "monitors",
+        "process_unit"
+      ],
+      "edges_per_graph": 41,
+      "single_incoming_targets": 1,
+      "active_targets": 6,
+      "wrong_negative_expected_cross_graph_fraction_batch128": 0.9934811592102051
+    },
+    {
+      "edge_type": [
+        "actuator",
+        "controls",
+        "process_unit"
+      ],
+      "edges_per_graph": 11,
+      "single_incoming_targets": 3,
+      "active_targets": 6,
+      "wrong_negative_expected_cross_graph_fraction_batch128": 0.9934810400009155
+    },
+    {
+      "edge_type": [
+        "process_unit",
+        "flows_to",
+        "process_unit"
+      ],
+      "edges_per_graph": 6,
+      "single_incoming_targets": 4,
+      "active_targets": 5,
+      "wrong_negative_expected_cross_graph_fraction_batch128": 0.9939134120941162
+    },
+    {
+      "edge_type": [
+        "sensor",
+        "co_monitors",
+        "sensor"
+      ],
+      "edges_per_graph": 370,
+      "single_incoming_targets": 2,
+      "active_targets": 40,
+      "wrong_negative_expected_cross_graph_fraction_batch128": 0.9941434264183044
+    },
+    {
+      "edge_type": [
+        "process_unit",
+        "monitored_by",
+        "sensor"
+      ],
+      "edges_per_graph": 41,
+      "single_incoming_targets": 41,
+      "active_targets": 41,
+      "wrong_negative_expected_cross_graph_fraction_batch128": 0.9940868616104126
+    },
+    {
+      "edge_type": [
+        "process_unit",
+        "controlled_by",
+        "actuator"
+      ],
+      "edges_per_graph": 11,
+      "single_incoming_targets": 11,
+      "active_targets": 11,
+      "wrong_negative_expected_cross_graph_fraction_batch128": 0.9939209222793579
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+# Stage-5 orchestration only. Model/data hyperparameters remain in the referenced YAML files.
+base_experiment_config: stage2.yaml
+data_config: data.yaml
+
+formal_overrides:
+  training:
+    epochs: 30
+    batch_size: 128
+    num_workers: 0
+    pin_memory: true
+    persistent_workers: false
+    early_stopping:
+      patience: 5
+  sampling:
+    strategy: run_balanced
+    windows_per_run: 20
+    train_order: run_grouped
+    run_group_chunk_size: 4
+    max_samples_per_split:
+      train: 5000
+      val: 2000
+      test: 2000
+  runtime:
+    device: cuda
+    deterministic: true
+    deterministic_warn_only: false
+
+run:
+  resume: true
+  include_ablations: false
+  include_sensitivity_in_protocol2: false
+
+models:
+  main:
+    - cnn
+    - gcn
+    - hgt
+    - hgt_learnable_quality
+    - hgt_consistency
+    - qc_hgt
+  ablations:
+    qc_hgt_without_quality:
+      base_model: qc_hgt
+      switches:
+        quality_attention: false
+        quality_loss: false
+    qc_hgt_without_consistency:
+      base_model: qc_hgt
+      switches:
+        consistency_attention: false
+        consistency_loss: false
+    qc_hgt_fixed_observable_quality:
+      base_model: qc_hgt
+      switches:
+        fixed_observable_quality: true
+        fixed_quality: false
+        quality_loss: false
+    qc_hgt_product_fusion:
+      base_model: qc_hgt
+      switches:
+        product_fusion: true
+    qc_hgt_without_relation_type:
+      base_model: qc_hgt
+      switches:
+        relation_types: false
+    qc_hgt_without_quality_loss:
+      base_model: qc_hgt
+      switches:
+        quality_loss: false
+    qc_hgt_without_consistency_loss:
+      base_model: qc_hgt
+      switches:
+        consistency_loss: false
+
+protocols:
+  protocol_1:
+    data_protocol: protocol_1
+    main_models: [cnn, gcn, hgt, qc_hgt]
+    ablation_models: []
+  protocol_2:
+    data_protocol: protocol_2
+    main_models: [hgt, hgt_learnable_quality, hgt_consistency, qc_hgt]
+    ablation_models: []
+
+metrics:
+  ece_bins: 15
+  probability_epsilon: 1.0e-12
+  normal_class: 0
+  store_per_run_delays: false
+
+artifacts:
+  enabled: true
+  max_samples: 5000
+  seed: 0
+  scenarios:
+    - clean
+    - protocol_group=unseen_combination
+
+sensitivity:
+  enabled: false
+  protocol: protocol_2
+  model: qc_hgt
+  evaluation_scenario: protocol_group=known
+  window_length: [10, 20, 30, 50]
+  lambda_q: [0.0, 0.1, 0.5, 1.0, 2.0]
+  lambda_c: [0.0, 0.1, 0.5, 1.0, 2.0]
+  fixed_reference:
+    window_length: 30
+    lambda_q: 0.5
+    lambda_c: 0.2
+
+summary:
+  std_ddof: 1
+  missing_corruptions: [random_missing, continuous_missing]
+  main_columns:
+    Clean: clean
+    Noise: gaussian_noise
+    Missing: missing
+    Drift: drift
+    TimeShift: time_shift
+    Mixed: protocol_group=unseen_combination
+  # The paper's single main table uses protocol 1 for clean/single-degradation
+  # robustness and protocol 2 for the unseen mixed-degradation column.
+  combined_main_sources:
+    Clean: protocol_1
+    Noise: protocol_1
+    Missing: protocol_1
+    Drift: protocol_1
+    TimeShift: protocol_1
+    Mixed: protocol_2
+  combined_main_models: [hgt, qc_hgt]
+  ablation_protocols: [protocol_2]
+  group_protocols: [protocol_2]
+  ablation_rows:
+    - [Full Model, qc_hgt]
+    - [HGT, hgt]
+    - [Quality Only, hgt_learnable_quality]
+    - [Consistency Only, hgt_consistency]
+
+visualization:
+  embedding_enabled: false
+  method: tsne
+  random_state: 0
+  tsne_perplexity: 30.0
+  umap_neighbors: 15
+  umap_min_dist: 0.1
+  figure_size: [9.0, 7.0]
+  dpi: 180
+  colormap: tab20
+  reliability_model: qc_hgt
+  fault_trace_model: qc_hgt
+
+output:
+  results_directory: ../results/stage5
+  checkpoint_subdirectory: checkpoints
+  log_subdirectory: logs
+  artifact_subdirectory: artifacts
+  summary_subdirectory: summary
+  figure_subdirectory: figures
+  json_indent: 2
+
+# Design note (paper Sec. 5.1--5.8): the 40-run conference matrix uses CNN,
+# GCN, HGT, and QC-HGT in protocol 1, then HGT, Quality Only, Consistency Only,
+# and QC-HGT in protocol 2. Five seeds are retained; embeddings are omitted.

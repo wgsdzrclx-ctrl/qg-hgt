@@ -1,0 +1,231 @@
+experiment:
+  name: stage2_mlp_baseline
+
+data:
+  config_path: data.yaml
+  variant_override: null           # null keeps dataset.variant from data.yaml.
+  test_scenario: clean
+  print_leakage_report: true
+
+graph:
+  homogeneous_ablation: false
+  temporal_negative_shift: 3
+  statistics:
+    feature_names: [mean, std, min, max, trend, last, delta]
+    std_correction: 0
+    missing_fill_value: 0.0
+
+models:
+  mlp:
+    input_dim: 364
+    hidden_dims: [256, 128]
+    dropout: 0.20
+    activation: relu
+    input_normalization: layer_norm
+  cnn:
+    input_channels: 52
+    channels: [64, 128]
+    kernel_sizes: [5, 3]
+    dropout: 0.20
+    activation: relu
+    normalization_epsilon: 1.0e-6
+  tcn:
+    input_channels: 52
+    channels: [64, 64]
+    kernel_size: 3
+    dilations: [1, 2]
+    dropout: 0.20
+    activation: relu
+    normalization_epsilon: 1.0e-6
+  lstm:
+    input_size: 52
+    hidden_dim: 64
+    num_layers: 2
+    dropout: 0.20
+    bidirectional: false
+    normalization_epsilon: 1.0e-6
+  gcn:
+    input_dim: 7
+    input_normalization: layer_norm
+    hidden_dim: 64
+    num_layers: 2
+    classifier_hidden_dims: [128]
+    dropout: 0.20
+    activation: relu
+  sage:
+    input_dim: 7
+    input_normalization: layer_norm
+    hidden_dim: 64
+    num_layers: 2
+    aggregation: mean
+    classifier_hidden_dims: [128]
+    dropout: 0.20
+    activation: relu
+  gat:
+    input_dim: 7
+    input_normalization: layer_norm
+    hidden_dim: 64
+    num_layers: 2
+    heads: 4
+    attention_dropout: 0.10
+    classifier_hidden_dims: [128]
+    dropout: 0.20
+    activation: elu
+  rgcn:
+    input_dim: 7
+    input_normalization: layer_norm
+    hidden_dim: 64
+    num_layers: 2
+    classifier_hidden_dims: [128]
+    dropout: 0.20
+    activation: relu
+  hgt:
+    input_dim: 7
+    input_normalization: layer_norm
+    hidden_dim: 64
+    num_layers: 2
+    heads: 4
+    classifier_hidden_dims: [128]
+    dropout: 0.20
+    activation: gelu
+  qc_hgt:
+    input_dim: 7
+    input_normalization: layer_norm
+    hidden_dim: 64
+    num_layers: 2
+    relation_dim: 16
+    dropout: 0.10
+    activation: elu
+    quality:
+      descriptor_normalization: layer_norm
+      hidden_dims: [32, 16]
+      activation: relu
+      dropout: 0.10
+      fft_high_frequency_start: 0.50
+      history_length: 10
+      normalize_history_deviation: true
+      repeat_tolerance: 1.0e-6
+      timestamp_delay_scale: 1.0
+      epsilon: 1.0e-8
+      fixed_observable:
+        weights: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+        scales: [0.10, 1.0, 0.25, 1.0, 0.25, 1.0]
+    consistency:
+      hidden_dims: [64, 32]
+      activation: relu
+      dropout: 0.10
+      memory:
+        logit_chunk_size: 16384
+        gradient_checkpointing: true
+      negative_sampling:
+        random_wrong_connection: true
+        different_window_or_run: true
+        temporal_misalignment: true
+        balance_positive_negative: true
+    attention:
+      negative_slope: 0.20
+      epsilon: 1.0e-8
+      learnable_fusion_coefficients: true
+      # Order follows EDGE_TYPES in data/tep_hetero_graph.py.
+      quality_lambda_initial: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+      consistency_gamma_initial: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+    classification:
+      hidden_dims: [128]
+      activation: relu
+      dropout: 0.20
+    loss_weights:
+      classification: 1.0
+      quality: 0.50
+      consistency: 0.20
+    switches:
+      quality_attention: true
+      consistency_attention: true
+      fixed_quality: false
+      product_fusion: false
+      quality_loss: true
+      consistency_loss: true
+      fixed_observable_quality: false
+      relation_types: true
+  hgt_fixed_quality:
+    switches:
+      quality_attention: true
+      consistency_attention: false
+      fixed_quality: true
+      product_fusion: false
+      quality_loss: false
+      consistency_loss: false
+  hgt_learnable_quality:
+    switches:
+      quality_attention: true
+      consistency_attention: false
+      fixed_quality: false
+      product_fusion: false
+      quality_loss: true
+      consistency_loss: false
+  hgt_consistency:
+    switches:
+      quality_attention: false
+      consistency_attention: true
+      fixed_quality: false
+      product_fusion: false
+      quality_loss: false
+      consistency_loss: true
+
+training:
+  optimizer: adamw
+  loss: cross_entropy
+  epochs: 3
+  batch_size: 128
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  gradient_clip_norm: 5.0
+  num_workers: 0
+  pin_memory: false
+  persistent_workers: false
+  shuffle:
+    train: true
+    val: false
+    test: false
+  early_stopping:
+    metric: macro_f1
+    mode: max
+    patience: 2
+    min_delta: 0.0001
+
+evaluation:
+  metrics:
+    ece_bins: 15
+    probability_epsilon: 1.0e-12
+    normal_class: 0
+    store_per_run_delays: false
+
+# Non-null limits make the supplied config a quick end-to-end smoke experiment.
+# Set all three values to null for the full paper experiment.
+sampling:
+  base_seed: 0                     # Keep sampled windows fixed across model seeds.
+  max_samples_per_split:
+    train: 512
+    val: 256
+    test: 256
+  seed_offsets:
+    train: 0
+    val: 10000
+    test: 20000
+
+runtime:
+  device: auto
+  deterministic: true
+  deterministic_warn_only: true
+  cpu_threads: 4
+
+logging:
+  level: INFO
+
+output:
+  directory: ../results
+  checkpoint_subdirectory: checkpoints
+  log_subdirectory: logs
+  json_indent: 2
+
+reporting:
+  std_ddof: 1

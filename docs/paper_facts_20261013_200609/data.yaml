@@ -1,0 +1,294 @@
+# Reproducibility: every reported experiment must run all five seeds and report mean +/- std.
+experiment:
+  seeds: [0, 1, 2, 3, 4]
+
+dataset:
+  variant: extended500
+  paper_main_variant: extended500   # Multi-run source required by paper Sec. 5.1.
+  root: ../datasets/tep
+  num_variables: 52
+  xmeas_count: 41
+  xmv_count: 11
+  fault_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+  nan_fill_value: 0.0
+  run_cache_size: 256             # Bounds lazy Parquet cache; covers the Stage-5 sampled runs.
+
+  split:
+    seed: 0                         # Fixed across model seeds, per paper Sec. 5.1.
+    validation_fraction: 0.20
+    stratify_by_fault: true        # Extended500 has enough independent runs for per-class splitting.
+    singleton_policy: train
+    fail_on_leakage: true
+
+  # Fallback only; each variant below can override the onset convention.
+  labeling:
+    normal_class: 0
+    normal_before_onset: false
+    sample_index_base: 1
+    fault_onset_sample:
+      train: null
+      test: null
+
+  variants:
+    standard:
+      layout: run_files
+      experiment_role: compatibility_only
+      num_classes: 22               # Normal + IDV1--IDV21.
+      fault_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+      source_note: Braatz reference files; 22 train files and 22 test files.
+      source:
+        name: Tennessee Eastman Process reference simulation files (Braatz)
+        url: https://github.com/camaramm/tennessee-eastman-profBraatz
+        revision: 0643318858ce7c87292bd59820b459e12a13d009
+      train_dir: standard/train
+      test_dir: standard/test
+      manifest: null               # Optional CSV: split,path,run_id,fault_id
+      manifest_columns:
+        split: split
+        path: path
+        run_id: run_id
+        fault_id: fault_id
+      file_glob: "**/*"
+      extensions: [.csv, .txt, .dat, .npy, .npz, .pt, .pth]
+      expected_train_runs: 22
+      expected_test_runs: 22
+      strict_counts: true
+      # There is only one source-training run per class. A stratified split
+      # would put every singleton in train and leave validation empty.
+      split:
+        seed: 0
+        validation_fraction: 0.20
+        stratify_by_fault: false
+        singleton_policy: train
+        fail_on_leakage: true
+      delimiter: auto              # auto, whitespace, comma, or another literal separator
+      has_header: auto
+      encoding: utf-8-sig
+      auto_transpose: true
+      label_column: label
+      label_column_index: null
+      fault_regex: '(?:fault|idv|d)[_-]?(?P<fault>\d{1,2})'
+      run_regex: '(?:run|r)[_-]?(?P<run>\d+)'
+      npz_data_key: x
+      npz_label_key: y
+      tensor_data_key: x
+      tensor_label_key: y
+      labeling:
+        normal_class: 0
+        normal_before_onset: true
+        sample_index_base: 1
+        fault_onset_sample:
+          train: 21
+          test: 161
+
+    extended500:
+      layout: table
+      experiment_role: paper_main
+      num_classes: 21               # Normal + IDV1--IDV20; this release has no IDV21.
+      source_note: Rieth et al.; 500 independent runs per class and source split.
+      source:
+        name: Tennessee Eastman Process simulation dataset (Rieth et al.)
+        url: https://doi.org/10.7910/DVN/6C3JR1
+        mirror: https://huggingface.co/datasets/foundation-models/golden-batch-sentinel-data
+      tables:
+        train:
+          - extended500/run_parquet/fault_free_train.parquet
+          - extended500/run_parquet/faulty_train.parquet
+        test:
+          - extended500/run_parquet/fault_free_test.parquet
+          - extended500/run_parquet/faulty_test.parquet
+      fault_ids: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+      fault_column: fault_id
+      run_column: simulation_id
+      sample_column: sample_id
+      parquet_row_group_per_run: true
+      expected_runs_per_fault: 500
+      strict_counts: true
+      max_runs_per_fault: null      # Set an integer for a small/debug subset.
+      labeling:
+        normal_class: 0
+        normal_before_onset: true
+        sample_index_base: 1
+        fault_onset_sample:
+          train: 21                # 1 h at a 3 min interval in common Rieth training files.
+          test: 161                # 8 h at a 3 min interval in common Rieth testing files.
+
+  # Empty means infer xmeas_1...xmeas_41,xmv_1...xmv_11 (case-insensitive).
+  feature_columns: []
+
+window:
+  length: 30
+  stride: 1
+
+corruptions:
+  gaussian_noise:
+    levels: [0.05, 0.10, 0.20, 0.40]
+  drift:
+    levels: [0.001, 0.0025, 0.005, 0.010]
+    time_origin: window_start
+  random_missing:
+    levels: [0.05, 0.10, 0.20, 0.40]
+    fill_value: 0.0
+  continuous_missing:
+    levels: [3, 6, 9, 12]
+    fill_value: 0.0
+  time_shift:
+    levels: [1, 2, 4, 8]
+    padding: edge
+
+quality:
+  # q*_j = clamp(1 - beta_noise*sigma_bar - beta_missing*m_bar
+  #                    - beta_drift*a_bar - beta_shift*delta_bar, 0, 1)
+  beta:
+    gaussian_noise: 0.25
+    missing: 0.25                 # Shared by random and continuous missingness.
+    drift: 0.25
+    time_shift: 0.25
+  normalization:
+    gaussian_sigma: 0.40
+    missing_rate: 0.40
+    drift_slope: 0.010
+    time_shift: 8
+  clamp: [0.0, 1.0]
+  # q* is training supervision, not a model input. Evaluation splits hide it by default.
+  attach_target:
+    train: true
+    val: false
+    test: false
+
+protocols:
+  # protocol_1: clean training -> degraded testing
+  # protocol_2: mixed known degradation training -> known/unseen-combination testing
+  active: protocol_1
+
+  protocol_1:
+    splits:
+      train:
+        mode: clean
+      val:
+        mode: clean
+      test:
+        mode: clean
+    test_scenarios:
+      clean:
+        mode: clean
+      degraded_single:
+        mode: sample
+        probability: 1.0
+        combinations:
+          - [gaussian_noise]
+          - [drift]
+          - [random_missing]
+          - [continuous_missing]
+          - [time_shift]
+        levels:
+          gaussian_noise: [0.05, 0.10, 0.20, 0.40]
+          drift: [0.001, 0.0025, 0.005, 0.010]
+          random_missing: [0.05, 0.10, 0.20, 0.40]
+          continuous_missing: [3, 6, 9, 12]
+          time_shift: [1, 2, 4, 8]
+        variable_selection: &test_variables
+          count: [1, 5]
+          include: []
+          exclude: []
+
+  protocol_2:
+    splits:
+      train:
+        mode: sample
+        probability: 0.80
+        combinations:
+          - [gaussian_noise]
+          - [drift]
+          - [random_missing]
+          - [continuous_missing]
+          - [time_shift]
+          - [gaussian_noise, random_missing]
+        levels:
+          gaussian_noise: [0.05, 0.10, 0.20]
+          drift: [0.001, 0.0025, 0.005]
+          random_missing: [0.05, 0.10, 0.20]
+          continuous_missing: [3, 6, 9]
+          time_shift: [1, 2, 4]
+        variable_selection: &train_variables
+          count: [1, 5]
+          include: []
+          exclude: []
+      val:
+        mode: sample
+        probability: 0.80
+        combinations:
+          - [gaussian_noise]
+          - [drift]
+          - [random_missing]
+          - [continuous_missing]
+          - [time_shift]
+          - [gaussian_noise, random_missing]
+        levels:
+          gaussian_noise: [0.05, 0.10, 0.20]
+          drift: [0.001, 0.0025, 0.005]
+          random_missing: [0.05, 0.10, 0.20]
+          continuous_missing: [3, 6, 9]
+          time_shift: [1, 2, 4]
+        variable_selection: *train_variables
+      test:
+        mode: clean
+    test_scenarios:
+      known:
+        mode: sample
+        probability: 1.0
+        combinations:
+          - [gaussian_noise]
+          - [drift]
+          - [random_missing]
+          - [continuous_missing]
+          - [time_shift]
+          - [gaussian_noise, random_missing]
+        levels:
+          gaussian_noise: [0.05, 0.10, 0.20]
+          drift: [0.001, 0.0025, 0.005]
+          random_missing: [0.05, 0.10, 0.20]
+          continuous_missing: [3, 6, 9]
+          time_shift: [1, 2, 4]
+        variable_selection: *test_variables
+      unseen_combination:
+        mode: sample
+        probability: 1.0
+        combinations:
+          - [drift, time_shift]
+          - [gaussian_noise, continuous_missing]
+          - [random_missing, time_shift]
+        levels:
+          gaussian_noise: [0.05, 0.10, 0.20]
+          drift: [0.001, 0.0025, 0.005]
+          random_missing: [0.05, 0.10, 0.20]
+          continuous_missing: [3, 6, 9]
+          time_shift: [1, 2, 4]
+        variable_selection: *test_variables
+
+evaluation:
+  test_scenario_by_protocol:
+    protocol_1: degraded_single
+    protocol_2: known
+  # Each entry creates one deterministic test Dataset. Across levels, the same
+  # windows, target variables, masks/noise draws are reused for paired curves.
+  fixed_strength_grid:
+    variable_selection: *test_variables
+    levels:
+      gaussian_noise: [0.05, 0.10, 0.20, 0.40]
+      drift: [0.001, 0.0025, 0.005, 0.010]
+      random_missing: [0.05, 0.10, 0.20, 0.40]
+      continuous_missing: [3, 6, 9, 12]
+      time_shift: [1, 2, 4, 8]
+
+self_check:
+  seed: 0
+  variable_index: 0
+  time_points: 30
+  sine_cycles: 2.0
+  trend_slope: 0.02
+  output_figure: ../artifacts/corruption_check.png
+  monotonic_tolerance: 1.0e-7
+  figure_size: [11.0, 14.0]
+  dpi: 150
+  line_width: 1.6
